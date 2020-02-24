@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-up" compressionlevel="0" width="30" height="6" tilewidth="128" tileheight="128" infinite="0" nextlayerid="9" nextobjectid="16">
+ <editorsettings>
+  <chunksize width="128" height="128"/>
+ </editorsettings>
+ <tileset firstgid="1" name="Dungeon Tileset Android" tilewidth="128" tileheight="128" tilecount="48" columns="8">
+  <image source="tileset.png" width="1024" height="769"/>
+ </tileset>
+ <layer id="6" name="background" width="30" height="6">
+  <data encoding="base64" compression="zlib">
+   eAETYGBgEBjFo2EwTNIAAOwxC0E=
+  </data>
+ </layer>
+ <layer id="8" name="graphics" width="30" height="6">
+  <data encoding="base64" compression="zlib">
+   eAFjYBgFyCGgiswBstH5aNJkc5nRdIoT4KNJo3DVUHgQjhAWMWxCMmiC6Hw0aTgXZCcMwwWBDCkohxFIDwQGAHq7AZY=
+  </data>
+ </layer>
+ <objectgroup id="2" name="ground">
+  <object id="3" x="-12" y="640" width="12" height="14"/>
+  <object id="4" x="0" y="640" width="3840" height="128"/>
+ </objectgroup>
+ <objectgroup id="3" name="obstactle">
+  <object id="5" x="1024" y="384" width="128" height="256"/>
+  <object id="6" x="1536" y="384" width="128" height="256"/>
+  <object id="13" x="2816" y="512" width="384" height="128"/>
+  <object id="15" x="2944" y="384" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="4" name="bricks"/>
+ <objectgroup id="5" name="coins">
+  <object id="7" x="1024" y="256" width="128" height="128"/>
+  <object id="8" x="1536" y="256" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="7" name="door">
+  <object id="10" x="3584" y="384" width="128" height="256"/>
+  <object id="11" x="2424.24" y="-1130.3"/>
+ </objectgroup>
+</map>
