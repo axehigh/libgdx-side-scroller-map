@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MapGame extends Game {
-    public static final int PPM = 128;
-    public static final int V_WIDTH = 4;
-    public static final int V_HEIGHT = 6;
+//    public static final int PPM = 128;
+//    public static final int V_WIDTH = 4;
+//    public static final int V_HEIGHT = 6;
 
 
     //Box2D Collision Bits
