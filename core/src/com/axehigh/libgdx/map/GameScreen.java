@@ -1,6 +1,7 @@
 package com.axehigh.libgdx.map;
 
 import com.axehigh.libgdx.map.tools.MapPropertiesWrapper;
+import com.axehigh.libgdx.map.tools.WorldCreator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,10 +14,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import static com.axehigh.libgdx.map.MapGame.PPM;
 
 public class GameScreen implements Screen {
 
@@ -37,14 +38,13 @@ public class GameScreen implements Screen {
     float viewPortHeight;
     //Box2d variables
     private World world;
-    private Box2DDebugRenderer b2dr;
-//    private WorldCreator creator;
+    private Box2DDebugRenderer box2DDebugRenderer;
+    private WorldCreator creator;
 
     // For test
     private Texture texture;
 
 
-    float PPM = 128;
     float scrollSpeed = 800 / PPM;
 
     MapPropertiesWrapper mapPropertiesWrapper;
@@ -82,9 +82,10 @@ public class GameScreen implements Screen {
         //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
         world = new World(new Vector2(0, -10), true);
         //allows for debug lines of our box2d world.
-        b2dr = new Box2DDebugRenderer();
+        box2DDebugRenderer = new Box2DDebugRenderer();
+        setColorOfDebugRenderer();
 
-//        creator = new WorldCreator(this);
+        creator = new WorldCreator(this);
 
         camera.update();
 
@@ -93,6 +94,12 @@ public class GameScreen implements Screen {
         Gdx.app.log("Setup", "ViewPort screen width: " + viewPort.getScreenWidth());
         Gdx.app.log("Setup", "ViewPort world width: " + viewPort.getWorldWidth());
         Gdx.app.log("Setup", "screen width: " + screenWidth);
+    }
+
+    private void setColorOfDebugRenderer() {
+        box2DDebugRenderer .SHAPE_STATIC.r = 255f;
+        box2DDebugRenderer .SHAPE_STATIC.g = 0;
+        box2DDebugRenderer .SHAPE_STATIC.b = 0;
     }
 
 
@@ -131,7 +138,6 @@ public class GameScreen implements Screen {
     private void moveCameraRight(float dt, float newCameraPositionX) {
         newCameraPositionX += scrollSpeed * dt;
         Gdx.app.log("Move", "Right: " + newCameraPositionX);
-//        if (newCameraPositionX < mapPropertiesWrapper.getTotalMapWidthInPixels() - viewPort.getWorldWidth() / 2) {
         if (newCameraPositionX < mapPropertiesWrapper.getMapWidth() - viewPort.getWorldWidth() / 2) {
             camera.position.x = newCameraPositionX;
         }
@@ -176,7 +182,7 @@ public class GameScreen implements Screen {
         mapRenderer.render();
 
         //renderer our Box2DDebugLines
-        b2dr.render(world, camera.combined);
+        box2DDebugRenderer.render(world, camera.combined);
 
 //        batch.setProjectionMatrix(camera.combined);
 
@@ -185,6 +191,7 @@ public class GameScreen implements Screen {
 //        batch.draw(texture, 0, 0);
 //        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 //        batch.end();
+        Gdx.app.log("Render", "Frames per seconds: " + Gdx.graphics.getFramesPerSecond());
     }
 
     @Override
@@ -212,12 +219,11 @@ public class GameScreen implements Screen {
         map.dispose();
         mapRenderer.dispose();
 //        world.dispose();
-//        b2dr.dispose();
+        box2DDebugRenderer.dispose();
     }
 
     public World getWorld() {
-//        return world;
-        return null;
+        return world;
     }
 
     public TiledMap getMap() {
