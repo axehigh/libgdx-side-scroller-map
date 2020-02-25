@@ -1,12 +1,12 @@
 package com.axehigh.libgdx.map;
 
+import com.axehigh.libgdx.map.sprites.Hero;
 import com.axehigh.libgdx.map.tools.MapPropertiesWrapper;
 import com.axehigh.libgdx.map.tools.WorldCreator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -42,7 +42,7 @@ public class GameScreen implements Screen {
     private WorldCreator creator;
 
     // For test
-    private Texture texture;
+    private Hero hero;
 
 
     float scrollSpeed = 800 / PPM;
@@ -64,7 +64,7 @@ public class GameScreen implements Screen {
         viewPort = new StretchViewport(viewPortWidth / PPM, viewPortHeight / PPM, camera);
 
         batch = new SpriteBatch();
-        texture = new Texture("badlogic.jpg");
+
 
         //Load our map and setup our map mapRenderer
         maploader = new TmxMapLoader();
@@ -89,6 +89,8 @@ public class GameScreen implements Screen {
 
         camera.update();
 
+        hero = new Hero(world,1,4);
+
         // Debug setup
         Gdx.app.log("Setup", "MapSize: " + mapPropertiesWrapper.toString());
         Gdx.app.log("Setup", "ViewPort screen width: " + viewPort.getScreenWidth());
@@ -97,9 +99,9 @@ public class GameScreen implements Screen {
     }
 
     private void setColorOfDebugRenderer() {
-        box2DDebugRenderer .SHAPE_STATIC.r = 255f;
-        box2DDebugRenderer .SHAPE_STATIC.g = 0;
-        box2DDebugRenderer .SHAPE_STATIC.b = 0;
+        box2DDebugRenderer.SHAPE_STATIC.r = 255f;
+        box2DDebugRenderer.SHAPE_STATIC.g = 0;
+        box2DDebugRenderer.SHAPE_STATIC.b = 0;
     }
 
 
@@ -158,6 +160,7 @@ public class GameScreen implements Screen {
         //takes 1 step in the physics simulation(60 times per second)
         world.step(1 / 60f, 6, 2);
 
+        hero.update(dt);
         //update our camera with correct coordinates after changes
         camera.update();
 //        tell our renderer to draw only what our camera can see in our game world.
@@ -184,14 +187,14 @@ public class GameScreen implements Screen {
         //renderer our Box2DDebugLines
         box2DDebugRenderer.render(world, camera.combined);
 
-//        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
-//        batch.begin();
-        //Set our batch to now draw what the Hud camera sees.
-//        batch.draw(texture, 0, 0);
-//        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-//        batch.end();
-        Gdx.app.log("Render", "Frames per seconds: " + Gdx.graphics.getFramesPerSecond());
+        batch.begin();
+//        Set our batch to now draw what the Hud camera sees.
+        hero.draw(batch);
+//        batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        batch.end();
+//        Gdx.app.log("Render", "Frames per seconds: " + Gdx.graphics.getFramesPerSecond());
     }
 
     @Override
@@ -218,7 +221,8 @@ public class GameScreen implements Screen {
     public void dispose() {
         map.dispose();
         mapRenderer.dispose();
-//        world.dispose();
+        hero.dispose();
+        world.dispose();
         box2DDebugRenderer.dispose();
     }
 
