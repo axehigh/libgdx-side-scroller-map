@@ -44,8 +44,8 @@ public class GameScreen implements Screen {
     private Texture texture;
 
 
-    int PPM = 128;
-    int scrollSpeed = 800;
+    float PPM = 128;
+    float scrollSpeed = 800 / PPM;
 
     MapPropertiesWrapper mapPropertiesWrapper;
 
@@ -61,7 +61,7 @@ public class GameScreen implements Screen {
 
         //create a FitViewport to maintain virtual aspect ratio despite screen size
 //        viewPort = new FitViewport(viewPortWidth / PPM, viewPortHeight / PPM, camera);
-        viewPort = new StretchViewport(viewPortWidth, viewPortHeight, camera);
+        viewPort = new StretchViewport(viewPortWidth / PPM, viewPortHeight / PPM, camera);
 
         batch = new SpriteBatch();
         texture = new Texture("badlogic.jpg");
@@ -70,7 +70,7 @@ public class GameScreen implements Screen {
         maploader = new TmxMapLoader();
         map = maploader.load("map02.tmx");
 //        mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / MapGame.PPM);
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / PPM);
 
         mapPropertiesWrapper = new MapPropertiesWrapper(map);
 
@@ -131,7 +131,8 @@ public class GameScreen implements Screen {
     private void moveCameraRight(float dt, float newCameraPositionX) {
         newCameraPositionX += scrollSpeed * dt;
         Gdx.app.log("Move", "Right: " + newCameraPositionX);
-        if (newCameraPositionX < mapPropertiesWrapper.getTotalMapWidthInPixels() - viewPort.getWorldWidth() / 2) {
+//        if (newCameraPositionX < mapPropertiesWrapper.getTotalMapWidthInPixels() - viewPort.getWorldWidth() / 2) {
+        if (newCameraPositionX < mapPropertiesWrapper.getMapWidth() - viewPort.getWorldWidth() / 2) {
             camera.position.x = newCameraPositionX;
         }
 
@@ -170,7 +171,6 @@ public class GameScreen implements Screen {
         //Clear the game screen with Black
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 
         //render our game map
         mapRenderer.render();
