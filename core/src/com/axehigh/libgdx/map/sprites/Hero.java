@@ -18,6 +18,7 @@ import static com.axehigh.libgdx.map.MapGame.*;
 public class Hero extends Sprite {
     public Body b2body;
     private World world;
+    private int moveSpeed = 2;
 
     public Hero(World world, float x, float y) {
         this.world = world;
@@ -29,7 +30,7 @@ public class Hero extends Sprite {
 
     public void defineHeroInBox2d() {
         BodyDef bdef = new BodyDef();
-        bdef.position.set((32) / PPM, (32) / PPM);
+        bdef.position.set((800) / PPM, (200) / PPM);
         bdef.type = BodyDef.BodyType.DynamicBody;
         b2body = world.createBody(bdef);
 
@@ -74,7 +75,14 @@ public class Hero extends Sprite {
 //        this.setY(0);
 
         Gdx.app.log("Hero", "Coordinates:: " + this.getX() + ", " + this.getY());
-//        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
+    }
 
+    public Body getB2body() {
+        return b2body;
+    }
+
+    public int getMoveSpeed() {
+        return moveSpeed;
     }
 }

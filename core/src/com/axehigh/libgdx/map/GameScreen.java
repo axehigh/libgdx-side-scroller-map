@@ -1,8 +1,10 @@
 package com.axehigh.libgdx.map;
 
+import com.axehigh.libgdx.map.controller.Controller;
 import com.axehigh.libgdx.map.sprites.Hero;
 import com.axehigh.libgdx.map.tools.MapPropertiesWrapper;
 import com.axehigh.libgdx.map.tools.WorldCreator;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,6 +25,9 @@ public class GameScreen implements Screen {
 
     private final int screenHeight;
     private final int screenWidth;
+    private final Controller controller;
+    private final int gravity = -10;
+    //    private final int gravity = 0;
     MapGame game;
 
     SpriteBatch batch;
@@ -80,7 +85,8 @@ public class GameScreen implements Screen {
         camera.position.set(viewPort.getWorldWidth() / 2, viewPort.getWorldHeight() / 2, 0);
 
         //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
-        world = new World(new Vector2(0, -10), true);
+
+        world = new World(new Vector2(0, gravity), true);
         //allows for debug lines of our box2d world.
         box2DDebugRenderer = new Box2DDebugRenderer();
         setColorOfDebugRenderer();
@@ -89,13 +95,16 @@ public class GameScreen implements Screen {
 
         camera.update();
 
-        hero = new Hero(world,1,4);
+        hero = new Hero(world, 1, 4);
 
         // Debug setup
         Gdx.app.log("Setup", "MapSize: " + mapPropertiesWrapper.toString());
         Gdx.app.log("Setup", "ViewPort screen width: " + viewPort.getScreenWidth());
         Gdx.app.log("Setup", "ViewPort world width: " + viewPort.getWorldWidth());
         Gdx.app.log("Setup", "screen width: " + screenWidth);
+
+        //Controller
+        controller = new Controller(batch);
     }
 
     private void setColorOfDebugRenderer() {
@@ -106,11 +115,11 @@ public class GameScreen implements Screen {
 
 
     public void handleInput(float dt) {
-//        if (Gdx.input.isTouched()) {
-//            Gdx.app.log("handleinput", "positionX: " + gamecam.position.x);
-//            gamecam.position.x += 100 * dt;
-//        }
+        handleControllerInput();
+        handleScreenInput(dt);
+    }
 
+    private void handleScreenInput(float dt) {
         if (Gdx.input.isTouched()) {
 
             Gdx.app.log("handleinput", "Touch: " + Gdx.input.getX());
@@ -126,7 +135,19 @@ public class GameScreen implements Screen {
             }
 
         }
+    }
 
+    private void handleControllerInput() {
+
+        if (controller.isRightPressed()) {
+            hero.getB2body().setLinearVelocity(new Vector2(hero.getMoveSpeed(), hero.getB2body().getLinearVelocity().y));
+            Gdx.app.log("Hero", "Right: " + hero.getB2body().getLinearVelocity().x);
+        } else if (controller.isLeftPressed())
+            hero.getB2body().setLinearVelocity(new Vector2(-hero.getMoveSpeed(), hero.getB2body().getLinearVelocity().y));
+        else
+            hero.getB2body().setLinearVelocity(new Vector2(0, hero.getB2body().getLinearVelocity().y));
+        if (controller.isUpPressed() && hero.getB2body().getLinearVelocity().y == 0)
+            hero.getB2body().applyLinearImpulse(new Vector2(0, 5f), hero.getB2body().getWorldCenter(), true);
     }
 
     private void moveCameraLeft(float dt, float newCameraPositionX) {
@@ -147,11 +168,11 @@ public class GameScreen implements Screen {
     }
 
     private boolean inputLeftSide() {
-        return Gdx.input.getX() <= Gdx.graphics.getWidth() / 2;
+        return Gdx.input.getX() <= Gdx.graphics.getWidth() / 2 && Gdx.input.getY() < Gdx.graphics.getHeight() / 3;
     }
 
     private boolean inputRightSide(float x) {
-        return x > Gdx.graphics.getWidth() / 2;
+        return x > Gdx.graphics.getWidth() / 2 && Gdx.input.getY() < Gdx.graphics.getHeight() / 3;
     }
 
     public void update(float dt) {
@@ -195,11 +216,17 @@ public class GameScreen implements Screen {
 //        batch.setProjectionMatrix(hud.stage.getCamera().combined);
         batch.end();
 //        Gdx.app.log("Render", "Frames per seconds: " + Gdx.graphics.getFramesPerSecond());
+
+        //Controller
+        if (Gdx.app.getType() == Application.ApplicationType.Android)
+            controller.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         viewPort.update(width, height);
+        controller.resize(width, height);
+
     }
 
     @Override
